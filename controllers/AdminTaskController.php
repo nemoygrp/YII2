@@ -1,26 +1,38 @@
 <?php
 
 namespace app\controllers;
+
 use Yii;
-use app\models\Test;
 use app\models\tables\Tasks;
-use yii\web\Controller;
 use app\models\filters\TasksFilter;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 
-class TaskController extends Controller
+/**
+ * AdminTaskController implements the CRUD actions for Tasks model.
+ */
+class AdminTaskController extends Controller
 {
-   // public $layout = false;
-
-    public function actionTest()
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
     {
-        $model = new Test();
-        if(\Yii::$app->request->post()){
-            $model->load(\Yii::$app->request->post());
-        }
-
-        return $this->render('test', ['model' => $model]);
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
     }
 
+    /**
+     * Lists all Tasks models.
+     * @return mixed
+     */
     public function actionIndex()
     {
         $searchModel = new TasksFilter();
@@ -30,14 +42,8 @@ class TaskController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
-
     }
 
-    public function one($id)
-    {
-
-
-    }
     /**
      * Displays a single Tasks model.
      * @param integer $id
@@ -102,6 +108,14 @@ class TaskController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    /**
+     * Finds the Tasks model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Tasks the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
     protected function findModel($id)
     {
         if (($model = Tasks::findOne($id)) !== null) {
@@ -110,6 +124,4 @@ class TaskController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-
-
 }

@@ -8,13 +8,15 @@ use Yii;
  * This is the model class for table "users".
  *
  * @property int $id
- * @property string $name
  * @property string $login
  * @property string $password
- * @property string $create
+ * @property string $email
  */
 class Users extends \yii\db\ActiveRecord
 {
+    const SCENARIO_AUTH = 'auth';
+
+
     /**
      * {@inheritdoc}
      */
@@ -29,10 +31,9 @@ class Users extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['create'], 'safe'],
-            [['name'], 'string', 'max' => 50],
-            [['login', 'password'], 'string', 'max' => 255],
+            [['login', 'password'], 'required',],
+            [['login'], 'string', 'max' => 50],
+            [['password', 'email'], 'string', 'max' => 255],
         ];
     }
 
@@ -43,10 +44,21 @@ class Users extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
             'login' => 'Login',
             'password' => 'Password',
-            'create' => 'Create',
+            'email' => 'Email',
         ];
+    }
+
+    public function fields()
+    {
+        if($this->scenario == static::SCENARIO_AUTH){
+            return [
+                'username' => 'login',
+                'id',
+                'password'
+            ];
+        }
+        return parent::fields();
     }
 }
