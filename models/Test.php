@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: NEMOY
- * Date: 24.05.2019
- * Time: 19:20
- */
-
 namespace app\models;
 use yii\base\Model;
 
@@ -17,17 +10,18 @@ class Test extends Model
 
     public function rules()
     {
-        return [
-            [['title','content'], 'required'],
-            ['count','myValidate']
+        return[
+            [['title', 'content'],  'required'],
+            [['count'], 'safe']
         ];
     }
 
-    public function myValidate($attr)
+    public function myValidate($attr, $params)
     {
-        if(!in_array($this->$attr,[3,4,5])){
-            $this->addError($attr, 'Шляпа полная');
+        if(!in_array($this->$attr,[3 , 4, 5])){
+            $this->addError($attr,  "Неверный диапазон");
         }
     }
+
 
 }

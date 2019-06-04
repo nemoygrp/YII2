@@ -6,21 +6,24 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'bootstrap'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'bootstrap' => [
+          'class' => \app\components\Bootstrap::class
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'w375ahries-4QeADKk4NMDuA4-g8OaC7',
+            'cookieValidationKey' => '2iqCq24BqIXgSgEtnzFanZ1aF0KEAKBu',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => \app\models\UserIdentity::class,
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
