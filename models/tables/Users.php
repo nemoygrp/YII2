@@ -3,6 +3,8 @@
 namespace app\models\tables;
 
 use Yii;
+use yii\db\Expression;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "users".
@@ -60,5 +62,17 @@ class Users extends \yii\db\ActiveRecord
             ];
         }
         return parent::fields();
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'create_time',
+                'updatedAtAttribute' => 'update_time',
+                'value' => new Expression('NOW()'),
+            ],
+        ];
     }
 }

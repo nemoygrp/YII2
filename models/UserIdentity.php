@@ -48,8 +48,6 @@ class UserIdentity extends \yii\base\BaseObject implements \yii\web\IdentityInte
     {
         if ($user = Users::findOne(['login' => $username])) {
             $user->setScenario(Users::SCENARIO_AUTH);
-            //var_dump($user->toArray());
-            //exit;
             return new static($user->toArray());
         }
         return null;

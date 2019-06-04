@@ -31,22 +31,22 @@ if(!$hide){
 
     <?= DetailView::widget([
         'model' => $model,
-       // 'template' => '<div>{label} : {value}</div>',
+        //'template' => '<div>{label} : {value}</div>',
         'attributes' => [
             'id',
             'name',
-            [
+         /*   [
                 'label' => 'status',
                 'value' => $model->status->name,
                 'format' => 'html'
-            ],
+            ],*/
             'description:html',
             'creator_id',
             'responsible_id',
             'deadline',
             'status_id',
         ],
-        /*'options' => [
+       /* 'options' => [
             'tag' => 'div',
         ]*/
     ]) ?>

@@ -30,9 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ]
     ]);*/
 
-    /*echo \app\widgets\MyWidget::widget([
+    echo \app\widgets\MyWidget::widget([
        'label' => "Пожоще довай"
-    ]);*/
+    ]);
 
      echo GridView::widget([
         'dataProvider' => $dataProvider,

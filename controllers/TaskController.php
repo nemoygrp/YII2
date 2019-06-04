@@ -1,11 +1,17 @@
 <?php
 
 namespace app\controllers;
-use Yii;
-use app\models\Test;
+use app\models\events\EventUserRegistrationComplete;
+use app\models\forms\RegisterUserForm;
+use app\models\Subscribe;
+use app\models\SubscribeBehavior;
 use app\models\tables\Tasks;
+use app\models\tables\Users;
+use app\models\Test;
+use yii\base\Event;
+use yii\data\ActiveDataProvider;
+use yii\db\Query;
 use yii\web\Controller;
-use app\models\filters\TasksFilter;
 
 class TaskController extends Controller
 {
@@ -13,103 +19,72 @@ class TaskController extends Controller
 
     public function actionTest()
     {
-        $model = new Test();
-        if(\Yii::$app->request->post()){
-            $model->load(\Yii::$app->request->post());
-        }
+        $model = new RegisterUserForm([
+           'login' => 'vasechkin',
+           'password' => '123456789',
+           'email' => 'vasya@test.ru',
+        ]);
 
-        return $this->render('test', ['model' => $model]);
+      /*  $handler = function(EventUserRegistrationComplete $event){
+            (new Subscribe())->attache($event->userId);
+        };
+
+        $model->on(
+            RegisterUserForm::EVENT_REGISTRATION_COMPLETE,
+            $handler
+        );
+*/
+
+        /*Event::on(
+            RegisterUserForm::class,
+            RegisterUserForm::EVENT_REGISTRATION_VALIDATE_SUCCESS,
+            $handler);
+
+       /* $model->on(RegisterUserForm::EVENT_REGISTRATION_VALIDATE_SUCCESS, 'foo');
+
+        $model->on(
+            RegisterUserForm::EVENT_REGISTRATION_VALIDATE_SUCCESS,
+            [$this, 'handler']
+        );
+
+        $model->off(
+            RegisterUserForm::EVENT_REGISTRATION_VALIDATE_SUCCESS,
+            [TaskController::class, 'handler']
+        );*/
+
+        $model->register();
+exit();
+    }
+
+    public static function handler()
+    {
+   echo "Я обработчик";
+
+        /*Yii::$app->mailer->compose()
+            ->setTo($email)
+            ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->params['senderName']])
+            ->setReplyTo([$this->email => $this->name])
+            ->setSubject($this->subject)
+            ->setTextBody($this->body)
+            ->send();*/
     }
 
     public function actionIndex()
     {
-        $searchModel = new TasksFilter();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+        $model = new Tasks();
+        $model->on(Tasks::EVENT_AFTER_INSERT,'handler');
+        $dataProvider = new ActiveDataProvider([
+           'query' => Tasks::find()
         ]);
 
+        return $this->render('index', [
+        'dataProvider' => $dataProvider,
+        'model' => $model
+        ]);
     }
 
     public function one($id)
     {
 
-
     }
-    /**
-     * Displays a single Tasks model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Tasks model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Tasks();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Updates an existing Tasks model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Tasks model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
-    protected function findModel($id)
-    {
-        if (($model = Tasks::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-
 }
