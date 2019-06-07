@@ -1,21 +1,26 @@
 <?php
 
 namespace app\controllers;
+use app\models\tables\TaskStatuses;
+use app\models\tables\Users;
+use app\models\filters\TasksFilter;
+use Yii;
 use app\models\events\EventUserRegistrationComplete;
 use app\models\forms\RegisterUserForm;
 use app\models\Subscribe;
 use app\models\SubscribeBehavior;
 use app\models\tables\Tasks;
-use app\models\tables\Users;
 use app\models\Test;
 use yii\base\Event;
 use yii\data\ActiveDataProvider;
-use yii\db\Query;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+
 
 class TaskController extends Controller
 {
    // public $layout = false;
+
 
     public function actionTest()
     {
@@ -56,35 +61,45 @@ class TaskController extends Controller
 exit();
     }
 
-    public static function handler()
-    {
-   echo "Я обработчик";
-
-        /*Yii::$app->mailer->compose()
-            ->setTo($email)
-            ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->params['senderName']])
-            ->setReplyTo([$this->email => $this->name])
-            ->setSubject($this->subject)
-            ->setTextBody($this->body)
-            ->send();*/
-    }
 
     public function actionIndex()
     {
-        $model = new Tasks();
-        $model->on(Tasks::EVENT_AFTER_INSERT,'handler');
-        $dataProvider = new ActiveDataProvider([
-           'query' => Tasks::find()
-        ]);
+        $month = Yii::$app->request->post('TasksFilter')['create_time'];
+        $searchModel = new TasksFilter();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        //var_dump($month);
         return $this->render('index', [
-        'dataProvider' => $dataProvider,
-        'model' => $model
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'month' => $month
         ]);
     }
 
-    public function one($id)
+    public function actionOne($id)
     {
+        $model = $this->findModel($id);
+        $status = TaskStatuses::getStatusesList();
+        $responsible = Users::getUsersList();
 
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['one', 'id' => $model->id]);
+        }
+        return $this->render("one", [
+            'model' => $model,
+            'status' => $status,
+            'responsible' => $responsible
+            ]);
+    }
+
+
+
+    protected function findModel($id)
+    {
+        if (($model = Tasks::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

@@ -2,10 +2,7 @@
 
 namespace app\models\tables;
 
-use app\models\User;
 use Yii;
-use yii\db\Expression;
-use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "tasks".
@@ -58,7 +55,7 @@ class Tasks extends \yii\db\ActiveRecord
             'creator_id' => 'Creator ID',
             'responsible_id' => 'Responsible ID',
             'deadline' => 'Deadline',
-            'status_id' => 'Status ID',
+            'status_id' => 'Status',
         ];
     }
 
@@ -76,35 +73,4 @@ class Tasks extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Users::class, ['id' => 'responsible_id']);
     }
-
-    public function behaviors()
-      {
-
-         return [
-              [
-                  'class' => TimestampBehavior::className(),
-                  'createdAtAttribute' => 'create_time',
-                  'updatedAtAttribute' => 'update_time',
-                  'value' => new Expression('NOW()'),
-              ],
-            // $this->sendMail()
-
-          ];
-      }
-    public function sendMail()
-    {
-
-            $email = $this->getResponsible();
-        var_dump($email);
-
-            /*Yii::$app->mailer->compose()
-                ->setTo($email)
-                ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->params['senderName']])
-                ->setReplyTo([$this->email => $this->name])
-                ->setSubject($this->subject)
-                ->setTextBody($this->body)
-                ->send();*/
-
-    }
-
 }

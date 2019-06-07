@@ -29,26 +29,27 @@ if(!$hide){
         ]) ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        //'template' => '<div>{label} : {value}</div>',
-        'attributes' => [
-            'id',
-            'name',
-         /*   [
-                'label' => 'status',
-                'value' => $model->status->name,
-                'format' => 'html'
-            ],*/
-            'description:html',
-            'creator_id',
-            'responsible_id',
-            'deadline',
-            'status_id',
-        ],
-       /* 'options' => [
-            'tag' => 'div',
-        ]*/
-    ]) ?>
+    <?
+    $key = "task";
+    if($this->beginCache($key, [
+            'duration' => 20,
+            //'enabled' => false
+            'variations' => [$model->id, Yii::$app->language],
+    ])){
+        echo DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'id',
+                'name',
+                'description:html',
+                'creator_id',
+                'responsible_id',
+                'deadline',
+                'status_id',
+            ],
+        ]);
+        $this->endCache();
+    }
+ ?>
 
 </div>

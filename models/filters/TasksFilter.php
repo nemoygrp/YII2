@@ -5,6 +5,7 @@ namespace app\models\filters;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\tables\Tasks;
+use Yii;
 
 /**
  * TasksFilter represents the model behind the search form of `app\models\tables\Tasks`.
@@ -40,14 +41,14 @@ class TasksFilter extends Tasks
      */
     public function search($params)
     {
-        $query = Tasks::find();
+        $month = Yii::$app->request->post('TasksFilter')['create_time'];
+        $query = Tasks::find()->where("MONTH(create_time)='$month'");
+
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
-            'pagination' => [
-                'pageSize' => 4
-            ],
+            'pagination' => false,
             'query' => $query,
         ]);
 
