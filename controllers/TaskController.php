@@ -4,17 +4,13 @@ namespace app\controllers;
 use app\models\tables\TaskStatuses;
 use app\models\tables\Users;
 use app\models\filters\TasksFilter;
-use Yii;
-use app\models\events\EventUserRegistrationComplete;
-use app\models\forms\RegisterUserForm;
-use app\models\Subscribe;
-use app\models\SubscribeBehavior;
-use app\models\tables\Tasks;
 use app\models\Test;
-use yii\base\Event;
-use yii\data\ActiveDataProvider;
+use Yii;
+use app\models\tables\Tasks;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\data\ActiveDataProvider;
+use yii\web\UploadedFile;
 
 
 class TaskController extends Controller
@@ -22,51 +18,13 @@ class TaskController extends Controller
    // public $layout = false;
 
 
-    public function actionTest()
-    {
-        $model = new RegisterUserForm([
-           'login' => 'vasechkin',
-           'password' => '123456789',
-           'email' => 'vasya@test.ru',
-        ]);
-
-      /*  $handler = function(EventUserRegistrationComplete $event){
-            (new Subscribe())->attache($event->userId);
-        };
-
-        $model->on(
-            RegisterUserForm::EVENT_REGISTRATION_COMPLETE,
-            $handler
-        );
-*/
-
-        /*Event::on(
-            RegisterUserForm::class,
-            RegisterUserForm::EVENT_REGISTRATION_VALIDATE_SUCCESS,
-            $handler);
-
-       /* $model->on(RegisterUserForm::EVENT_REGISTRATION_VALIDATE_SUCCESS, 'foo');
-
-        $model->on(
-            RegisterUserForm::EVENT_REGISTRATION_VALIDATE_SUCCESS,
-            [$this, 'handler']
-        );
-
-        $model->off(
-            RegisterUserForm::EVENT_REGISTRATION_VALIDATE_SUCCESS,
-            [TaskController::class, 'handler']
-        );*/
-
-        $model->register();
-exit();
-    }
-
 
     public function actionIndex()
     {
         $month = Yii::$app->request->post('TasksFilter')['create_time'];
         $searchModel = new TasksFilter();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
 
         //var_dump($month);
         return $this->render('index', [
@@ -78,21 +36,41 @@ exit();
 
     public function actionOne($id)
     {
+        $comments = \app\models\tables\Comments::getCommentsFromID($id);
+
+        $dataProvider = new ActiveDataProvider([
+            'pagination' => false,
+            'query' => $comments,
+        ]);
+        $file = new Test();
+        if ($file->load(\Yii::$app->request->post())){
+            $file->upload = UploadedFile::getInstance($file,'upload');
+            $file->save();
+
+        }
+
+        //var_dump($comments);
+        return $this->render('view', [
+            'model' =>  $this->findModel($id),
+            'dataProvider' => $dataProvider,
+            'comments' => $comments,
+            'file' => $file
+            ]);
+    }
+
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
-        $status = TaskStatuses::getStatusesList();
-        $responsible = Users::getUsersList();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['one', 'id' => $model->id]);
         }
-        return $this->render("one", [
+        return $this->render("update", [
             'model' => $model,
-            'status' => $status,
-            'responsible' => $responsible
-            ]);
+            'status' => TaskStatuses::getStatusesList(),
+            'responsible' => Users::getUsersList()
+        ]);
     }
-
-
 
     protected function findModel($id)
     {

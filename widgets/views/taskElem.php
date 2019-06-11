@@ -6,7 +6,6 @@
                 <h3><?=$nameTask?></h3>
                 <p><?=$description?></p><p><?=$deadline?></p>
                 <p>
-                    <?= yii\helpers\Html::a('View', ['view', 'id' => $id], ['class' => 'btn btn-primary']) ?>
                     <?= yii\helpers\Html::a('Update', ['update', 'id' => $id], ['class' => 'btn btn-primary']) ?>
                     <?= yii\helpers\Html::a('Delete', ['delete', 'id' => $id], [
                         'class' => 'btn btn-danger',

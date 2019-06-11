@@ -10,6 +10,7 @@ class TaskElem extends Widget
     public $nameTask;
     public $description;
     public $deadline;
+    public $comments;
 
     public function run()
     {
@@ -18,8 +19,8 @@ class TaskElem extends Widget
             'id' => $this->id,
             'nameTask' => $this->nameTask,
             'description' => $this->description,
-            'deadline' => $this->deadline
-
+            'deadline' => $this->deadline,
+            'comments' => $this->comments
         ]);
     }
 }
