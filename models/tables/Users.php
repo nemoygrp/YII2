@@ -3,7 +3,6 @@
 namespace app\models\tables;
 
 use Yii;
-use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "users".
@@ -62,13 +61,12 @@ class Users extends \yii\db\ActiveRecord
         }
         return parent::fields();
     }
+
     public static function getUsersList()
     {
-        $users = static::find()
-            ->select(['id', 'login'])
-            ->asArray()
-            ->all();
-        $usersAr = ArrayHelper::map($users, 'id', 'login');
-        return $usersAr;
-    }
+        return static::find()
+            ->select(['login'])
+            ->indexBy('id')
+            ->column();
+}
 }

@@ -40,8 +40,8 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Lang', 'items' => [
-                ['label' => 'RU', 'url' => ['/site/index']],
-                ['label' => 'EN', 'url' => ['/site/index']],
+                ['label' => 'ru', 'url' => ['/site/lang', 'lang' => 'ru']],
+                ['label' => 'en', 'url' => ['/site/lang', 'lang' => 'en']],
             ]],
             ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'About', 'url' => ['/site/about']],

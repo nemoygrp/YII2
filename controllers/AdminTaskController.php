@@ -26,7 +26,7 @@ class AdminTaskController extends Controller
     public function behaviors()
     {
         return [
-            /*'cacheIndex' => [
+            'cacheIndex' => [
                 'class' => PageCache::class,
                 'duration' => 100,
                 'variations' => [Yii::$app->language],
@@ -38,7 +38,7 @@ class AdminTaskController extends Controller
                 'lastModified' => function($action, $params){
                     return date("Y-m-d");
                 }
-            ],*/
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

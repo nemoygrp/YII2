@@ -10,20 +10,20 @@ $config = [
     'bootstrap' => ['log', 'bootstrap'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
-        '@img'   => '@app/web/img'
+        '@npm' => '@vendor/npm-asset',
+        '@img' => "@app/web/img"
     ],
     'components' => [
         'i18n' => [
-          'translations' =>[
-              'app' => [
-                  'class' => \yii\i18n\PhpMessageSource::class,
-                  'basePath' => '@app/messages'
-              ]
-          ]
+            'translations' => [
+                'app*' => [
+                    'class' => \yii\i18n\PhpMessageSource::class,
+                    'basePath' => '@app/messages'
+                ]
+            ]
         ],
         'bootstrap' => [
-          'class' => \app\components\Bootstrap::class
+            'class' => \app\components\Bootstrap::class
         ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -56,14 +56,17 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'enableStrictParsing' => true,
             'rules' => [
+                'tasks-list' => 'task/index',
+                'task/<id:\d+>' => 'task/one',
+                'task/<id>/save' => 'task/save',
             ],
         ],
-        */
     ],
     'params' => $params,
 ];

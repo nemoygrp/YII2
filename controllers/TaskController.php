@@ -1,83 +1,97 @@
 <?php
 
 namespace app\controllers;
+
+use app\models\forms\TaskAttachmentsAddForm;
+use app\models\tables\TaskComments;
+use app\models\tables\Tasks;
 use app\models\tables\TaskStatuses;
 use app\models\tables\Users;
-use app\models\filters\TasksFilter;
-use app\models\Test;
-use Yii;
-use app\models\tables\Tasks;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\data\ActiveDataProvider;
+use yii\web\Controller;
 use yii\web\UploadedFile;
-
 
 class TaskController extends Controller
 {
-   // public $layout = false;
-
-
+    // public $layout = false;
 
     public function actionIndex()
     {
-        $month = Yii::$app->request->post('TasksFilter')['create_time'];
-        $searchModel = new TasksFilter();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $month = 5;
+        $query = Tasks::find();
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query
+        ]);
 
-
-        //var_dump($month);
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel,
-            'month' => $month
         ]);
     }
 
-    public function actionOne($id)
-    {
-        $comments = \app\models\tables\Comments::getCommentsFromID($id);
-
-        $dataProvider = new ActiveDataProvider([
-            'pagination' => false,
-            'query' => $comments,
-        ]);
-        $file = new Test();
-        if ($file->load(\Yii::$app->request->post())){
-            $file->upload = UploadedFile::getInstance($file,'upload');
-            $file->save();
-
-        }
-
-        //var_dump($comments);
-        return $this->render('view', [
-            'model' =>  $this->findModel($id),
-            'dataProvider' => $dataProvider,
-            'comments' => $comments,
-            'file' => $file
-            ]);
-    }
-
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['one', 'id' => $model->id]);
-        }
-        return $this->render("update", [
-            'model' => $model,
-            'status' => TaskStatuses::getStatusesList(),
-            'responsible' => Users::getUsersList()
+    public function actionOne($id){
+        return $this->render("one", [
+            'model' => Tasks::findOne($id),
+            'statusesList' => TaskStatuses::getStatusesList(),
+            'usersList' => Users::getUsersList(),
+            'taskCommentForm' => new TaskComments(),
+            'taskAttachmentForm' => new TaskAttachmentsAddForm(),
+            'userId' => \Yii::$app->user->id
         ]);
     }
-
-    protected function findModel($id)
+   /* public function actionSend()
     {
-        if (($model = Tasks::findOne($id)) !== null) {
-            return $model;
+        $model = Tasks::getDeadlineIsOver();
+
+        if (!empty($model)) {
+            foreach ($model as $key) {
+                $user = $key->creator;
+                \Yii::$app->mailer->compose()
+                    ->setTo($user->email)
+                    ->setFrom('Yii-admin@test.ru')
+                    ->setSubject('New Task')
+                    ->setTextBody("Dear {$user->login}, task {$key->id} it's time to start doing it! 
+                     It was created {$key->create_time},and today {$key->deadline}!
+                    Running for work")
+                    ->send();
+            }
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+            return ;
+    }*/
+
+    public function actionSave($id)
+    {
+        if ($model = Tasks::findOne($id)) {
+            $model->load(\Yii::$app->request->post());
+            $model->save();
+            \Yii::$app->session->setFlash('success', "Изменения сохранены");
+        } else {
+            \Yii::$app->session->setFlash('error', "Не удалось сохранить изменения");
+        }
+        $this->redirect(\Yii::$app->request->referrer);
+    }
+
+    public function actionAddComment()
+    {
+        $model = new TaskComments();
+        if ($model->load(\Yii::$app->request->post()) && $model->save()) {
+            \Yii::$app->session->setFlash('success', "Комментарий добавлен");
+        } else {
+            \Yii::$app->session->setFlash('error', "Не удалось добавить комментарий");
+        }
+        $this->redirect(\Yii::$app->request->referrer);
+    }
+
+    public function actionAddAttachment()
+    {
+        $model = new TaskAttachmentsAddForm();
+        $model->load(\Yii::$app->request->post());
+        $model->attachment = UploadedFile::getInstance($model, 'attachment');
+        if ($model->save()) {
+            \Yii::$app->session->setFlash('success', "Файл добавлен");
+        } else {
+            \Yii::$app->session->setFlash('error', "Не удалось добавить файл");
+        }
+        $this->redirect(\Yii::$app->request->referrer);
     }
 }

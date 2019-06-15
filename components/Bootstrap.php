@@ -13,6 +13,7 @@ class Bootstrap extends Component implements BootstrapInterface
 {
     public function bootstrap($app)
     {
+        $this->setLang();
         $this->attachEventsHandler();
     }
 
@@ -29,6 +30,12 @@ class Bootstrap extends Component implements BootstrapInterface
                 ->setTextBody("Dear {$responsible->login}, new task {$task->id} created")
                 ->send();
         });
+    }
+
+    private function setLang(){
+        if($lang = \Yii::$app->session->get('lang'))[
+            \Yii::$app->language = $lang
+        ];
     }
 
 }

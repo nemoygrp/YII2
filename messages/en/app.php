@@ -1,6 +1,7 @@
 <?php
 return [
-  'Привет' => "Hello",
-  'Ошибка' => "Error #{number}",
-    'test_content' => 'Content'
+    'hello' => "Hello!",
+    'error' => "catch Error № {number}!",
+    'test_content' => 'content',
+    'task_name' => 'Name'
 ];

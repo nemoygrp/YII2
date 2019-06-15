@@ -9,8 +9,9 @@ class Test extends Model
     public $content;
     public $title;
     public $count;
-    /**@var UploadedFile */
+    /** @var  UploadedFile */
     public $upload;
+
 
     public function rules()
     {
@@ -23,11 +24,11 @@ class Test extends Model
 
     public function save()
     {
-        if ($this->validate('upload')) {
-            $filePath = \Yii::getAlias("@img/{$this->upload->name}");
-            $this->upload->saveAs($filePath);
+        if($this->validate('upload')){
+            $filepath = \Yii::getAlias("@img/{$this->upload->name}");
+            $this->upload->saveAs($filepath);
 
-            Image::thumbnail($filePath, 100, 100)
+            Image::thumbnail($filepath, 100, 100)
                 ->save(\Yii::getAlias("@img/small/{$this->upload->name}"));
         }
     }
@@ -35,9 +36,10 @@ class Test extends Model
     public function attributeLabels()
     {
         return [
-            'content' => \Yii::t('app','test_content')
+            'content' => \Yii::t("app", 'test_content')
         ];
     }
+
 
     public function myValidate($attr, $params)
     {

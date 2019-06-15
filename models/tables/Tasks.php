@@ -50,12 +50,12 @@ class Tasks extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => Yii::t('app', 'task_name'),
             'description' => 'Description',
             'creator_id' => 'Creator ID',
             'responsible_id' => 'Responsible ID',
             'deadline' => 'Deadline',
-            'status_id' => 'Status',
+            'status_id' => 'Status ID',
         ];
     }
 
@@ -73,4 +73,26 @@ class Tasks extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Users::class, ['id' => 'responsible_id']);
     }
+
+    public function getTaskComments()
+    {
+        return $this->hasMany(TaskComments::class, ['task_id' => 'id']);
+    }
+
+    public function getTaskAttachments()
+    {
+        return $this->hasMany(TaskAttachments::class, ['task_id' => 'id']);
+    }
+
+    public static function getDeadlineIsOver()
+    {
+        $date = date("Y-m-d");
+        //$date = date("2019-06-17");
+        return static::find()
+            ->where(['deadline' => $date])
+            ->all();
+
+    }
+
+
 }
