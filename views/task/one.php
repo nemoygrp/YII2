@@ -5,6 +5,7 @@ use \yii\helpers\Html;
 
 /** @var \app\models\tables\TaskComments $taskCommentForm */
 /** @var \app\models\forms\TaskAttachmentsAddForm $taskAttachmentForm */
+\app\assets\TaskAsset::register($this);
 ?>
 <div class="task-edit">
     <div class="task-main">
@@ -24,7 +25,11 @@ use \yii\helpers\Html;
             </div>
             <div class="col-lg-4">
                 <?=$form->field($model, 'deadline')
-                    ->textInput(['type' => 'date'])
+                    ->widget(\yii\jui\DatePicker::class, [
+                        'language' => 'ru',
+                        'dateFormat' => 'yyyy-MM-dd'
+                    ])
+                   // ->textInput(['type' => 'date'])
                 ?>
             </div>
         </div>
@@ -35,15 +40,17 @@ use \yii\helpers\Html;
         </div>
         <?=Html::submitButton("Сохранить",['class' => 'btn btn-success']);?>
         <?ActiveForm::end()?>
+
+        <button class="push-me-btn">Нажми Меня!!!</button>
     </div>
 </div>
+<?php if(Yii::$app->user->can('TaskDelete')):?>
 <div class="attachments">
     <h3>Вложения</h3>
     <?php $form = ActiveForm::begin([
         'action' => Url::to(['task/add-attachment']),
         'options' => ['class' => "form-inline"]
-    ]);
-    ?>
+    ]);?>
     <?=$form->field($taskAttachmentForm, 'taskId')->hiddenInput(['value' => $model->id])->label(false);?>
     <?=$form->field($taskAttachmentForm, 'attachment')->fileInput();?>
     <?=Html::submitButton("Добавить",['class' => 'btn btn-default']);?>
@@ -70,3 +77,4 @@ use \yii\helpers\Html;
         <?php endforeach;?>
     </div>
 </div>
+<?php endif;

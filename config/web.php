@@ -14,6 +14,9 @@ $config = [
         '@img' => "@app/web/img"
     ],
     'components' => [
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
         'i18n' => [
             'translations' => [
                 'app*' => [
@@ -56,17 +59,16 @@ $config = [
             ],
         ],
         'db' => $db,
-
-        'urlManager' => [
+        /*'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => true,
+           // 'enableStrictParsing' => true,
             'rules' => [
                 'tasks-list' => 'task/index',
                 'task/<id:\d+>' => 'task/one',
                 'task/<id>/save' => 'task/save',
             ],
-        ],
+        ],*/
     ],
     'params' => $params,
 ];

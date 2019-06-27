@@ -59,6 +59,15 @@ class Tasks extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function findDeadline()
+    {
+        static::find()
+        ->where("DATEDIFF(NOW(), tasks.deadline) <= 1")
+        ->with('responsible')
+        ->all();
+    }
+
+
     public function getStatus()
     {
         return $this->hasOne(TaskStatuses::class, ['id' => 'status_id']);
@@ -83,16 +92,4 @@ class Tasks extends \yii\db\ActiveRecord
     {
         return $this->hasMany(TaskAttachments::class, ['task_id' => 'id']);
     }
-
-    public static function getDeadlineIsOver()
-    {
-        $date = date("Y-m-d");
-        //$date = date("2019-06-17");
-        return static::find()
-            ->where(['deadline' => $date])
-            ->all();
-
-    }
-
-
 }

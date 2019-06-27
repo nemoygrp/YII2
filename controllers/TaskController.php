@@ -8,11 +8,35 @@ use app\models\tables\Tasks;
 use app\models\tables\TaskStatuses;
 use app\models\tables\Users;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\UploadedFile;
 
 class TaskController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index','update'],
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['TaskUpdate'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+
     // public $layout = false;
 
     public function actionIndex()
@@ -38,33 +62,14 @@ class TaskController extends Controller
             'userId' => \Yii::$app->user->id
         ]);
     }
-   /* public function actionSend()
-    {
-        $model = Tasks::getDeadlineIsOver();
-
-        if (!empty($model)) {
-            foreach ($model as $key) {
-                $user = $key->creator;
-                \Yii::$app->mailer->compose()
-                    ->setTo($user->email)
-                    ->setFrom('Yii-admin@test.ru')
-                    ->setSubject('New Task')
-                    ->setTextBody("Dear {$user->login}, task {$key->id} it's time to start doing it! 
-                     It was created {$key->create_time},and today {$key->deadline}!
-                    Running for work")
-                    ->send();
-            }
-        }
-
-            return ;
-    }*/
 
     public function actionSave($id)
     {
+
         if ($model = Tasks::findOne($id)) {
             $model->load(\Yii::$app->request->post());
             $model->save();
-            \Yii::$app->session->setFlash('success', "Изменения сохранены");
+            \Yii::$app->session->setFlash('success', "Изменеия сохранены");
         } else {
             \Yii::$app->session->setFlash('error', "Не удалось сохранить изменения");
         }
